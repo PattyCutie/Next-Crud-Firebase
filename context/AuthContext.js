@@ -8,7 +8,6 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { doc, getDoc } from 'firebase/firestore'
-import { async } from "@firebase/util";
 
 const AuthContext = React.createContext()
 

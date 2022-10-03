@@ -31,7 +31,7 @@ const Login = () => {
 
   return (
     <div
-      className="flex flex-1 flex-col text-xs sm:text-sm items-center justify-center
+      className="relative flex flex-1 flex-col text-xs sm:text-sm items-center justify-center
     gap-2 sm:gap-4"
     >
       <h1 className="font-extrabold select-none text-white text-2xl sm:text-4xl uppercase">
@@ -79,7 +79,7 @@ const Login = () => {
       <button className="submitButton">
         <h2 className="relative z-20">
           <span className="">
-            <i className="fa-brands fa-google text-[16px] px-2"></i>
+            <i className="fa-brands fa-google text-[16px] gap-5"></i>
           </span>
           Login with Google
         </h2>
@@ -87,7 +87,7 @@ const Login = () => {
       <button className="submitButton">
         <h2 className="relative z-20">
           <span className="">
-            <i className="fa-brands fa-facebook text-[16px] px-2"></i>
+            <i className="fa-brands fa-facebook text-[16px] gap-5"></i>
           </span>
           Login with Facebook
         </h2>
@@ -95,7 +95,7 @@ const Login = () => {
       <button className="submitButton">
         <h2 className="relative z-20">
           <span className="">
-            <i className="fa-brands fa-github text-[16px] px-2"></i>
+            <i className="fa-brands fa-github text-[16px] gap-5"></i>
           </span>
           Login with GitHub
         </h2>
