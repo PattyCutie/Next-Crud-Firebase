@@ -1,41 +1,104 @@
 import React, { useEffect, useState } from "react";
-import { useAuth, userInfo } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import TodoCard from "./TodoCard";
 
+import { doc, setDoc, deleteField } from "firebase/firestore";
+import { db } from "../firebase";
+import UseFetchTodoList from "../hooks/fetchTodoList";
+import { async } from "@firebase/util";
+
 export default function UserDashboard() {
-  const { userInfo } = useAuth();
-  const [createTodo, setCreateTodo] = useState(false);
+  const { userInfo, currentUser } = useAuth();
+  //const [createTodo, setCreateTodo] = useState(false);
   const [todo, setTodo] = useState("");
 
-  const [todoList, setTodoList] = useState([]);
+  const [update, setUpdate] = useState(null)
+  const [updatedValue, setUpdatedValue ] = useState('')
+  
+  //const [todoList, setTodoList] = useState([]);
+  //console.log(todoList);
+  // fetch todo list (hooks)
+  const { todos, setTodos, loading, error } = UseFetchTodoList()
+  console.log(todos)
 
-  console.log(todoList)
+  // useEffect(() => {
+  //   if (!userInfo || Object.keys(userInfo).length === 0) {
+  //     setCreateTodo(true);
+  //   }
+  // }, [userInfo]);
 
-  useEffect(() => {
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      setCreateTodo(true);
-    }
-  }, [userInfo]);
-
-  function handleCreateTodo() {
+  //create Todo
+  async function handleCreateTodo() {
     if (!todo) {
       return;
     }
-    const newKey =
-      Object.keys(todoList).length === 0
+    const newKey = Object.keys(todos).length === 0
         ? 1
-        : Math.max(...Object.keys(todoList)) + 1;
+        : Math.max(...Object.keys(todos)) + 1;
 
-    setTodoList({ ...todoList, [newKey]: todo });
-    setTodo('')
+    setTodos({ ...todos, [newKey]: todo });
+    
+    const useRef = doc(db, "users", currentUser.uid);
+    await setDoc(useRef, {
+      'todos': {
+          [newKey]: todo,
+        },
+      },
+      { merge: true } 
+    );
+    setTodo("");
   }
+
+// update existing Todo 
+  async function handleUpdate() {
+    if (!updatedValue) {
+      return
+    }
+    const newKey = update
+    setTodos({...todos, [newKey]: updatedValue })
+    const useRef = doc(db, 'users', currentUser.uid)
+    await setDoc(useRef, {
+      'todos': {
+        [newKey] : updatedValue
+      }
+    }, {merge: true})
+
+    setUpdate(null)
+    setUpdatedValue('')
+  }
+
+//updating todo field  
+function handleAddUpdated(todoKey) {
+  return () => {
+    console.log(todos[todoKey])
+    console.log('this is adding updated todo task')
+    setUpdate(todoKey)
+    setUpdatedValue(todos[todoKey])
+  }
+}
+
+// delete existing todo
+function handleDelete(todoKey) {
+  return async () => {
+    const temObj = {...todos}
+    delete temObj[todoKey]
+
+    setTodos(temObj)
+    const userRef = doc(db, 'users', currentUser.uid)
+    await setDoc(userRef, {
+      'todos' : {
+        [todoKey] : deleteField()
+      }
+    }, {merge: true})
+  }
+}
 
   return (
     <div
-      className="flex flex-col w-full max-w-[65ch] gap-3 sm:gap-5
+      className="flex flex-col flex-1 w-full max-w-[65ch] gap-3 sm:gap-5
     mx-auto"
     >
-      {createTodo && (
+     
         <div className="flex items-stretch">
           <input
             type="text"
@@ -54,19 +117,42 @@ export default function UserDashboard() {
             Create
           </button>
         </div>
+      
+
+      
+      {(userInfo && !loading) && (
+        <>
+          {Object.keys(todos).map((todo, i) => {
+
+            return (
+            <TodoCard 
+            key={i}
+            update={update}
+            
+            handleUpdate={handleUpdate}
+
+            todoKey={todo}
+            handleAddUpdated={handleAddUpdated}
+
+            updatedValue={updatedValue}
+            setUpdatedValue={setUpdatedValue}
+
+            handleDelete={handleDelete}
+            >
+              {todos[todo]}
+            </TodoCard>
+              )
+          })}
+        </>
       )}
-      {userInfo && (
-      <>
-      {Object.keys(todoList).map((todo, i) => {
-        return (
-          <TodoCard key={i}>
-            {todoList[todo]}
-          </TodoCard>
-        )
-      })}
-      </>
-      )}
-      {!createTodo && (
+      {(userInfo && loading ) && (
+        <div className="flex flex-1 gap-5 items-center justify-center">
+          <div className="bg-white w-8 h-8 rounded-full animate-bounce" />
+          <div className="bg-white w-8 h-8 rounded-full animate-bounce" />
+          <div className="bg-white w-8 h-8 rounded-full animate-bounce" />
+        </div>)}
+        
+      {/* {!createTodo && (
         <button
           onClick={() => setCreateTodo(true)}
           className="text-lg text-white uppercase border-2 rounded-lg py-2
@@ -74,7 +160,7 @@ export default function UserDashboard() {
         >
           create todo
         </button>
-      )}
+      )} */}
     </div>
   );
 }
