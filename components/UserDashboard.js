@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import TodoCard from "../components/TodoCard";
 
@@ -18,7 +18,7 @@ export default function UserDashboard() {
   //console.log(todoList);
   // fetch todo list (hooks)
   const { todos, setTodos, loading, error } = UseFetchTodoList()
-  console.log(todos)
+  //console.log(todos)
 
   // useEffect(() => {
   //   if (!userInfo || Object.keys(userInfo).length === 0) {
