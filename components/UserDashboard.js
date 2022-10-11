@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import TodoCard from "./TodoCard";
+import TodoCard from "../components/TodoCard";
 
 import { doc, setDoc, deleteField } from "firebase/firestore";
 import { db } from "../firebase";
 import UseFetchTodoList from "../hooks/fetchTodoList";
-import { async } from "@firebase/util";
 
 export default function UserDashboard() {
   const { userInfo, currentUser } = useAuth();

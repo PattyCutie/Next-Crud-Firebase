@@ -6,7 +6,7 @@ export default function TodoCard(props) {
   return (
     <div
       className="relative p-2 sm:p-3 border-2 border-solid border-white 
-    flex items-stretch text-white rounded-lg"
+    flex items-stretch text-white rounded-lg bg-re"
     >
       <div className="flex flex-1">
         
